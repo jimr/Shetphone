@@ -1,0 +1,4 @@
+run.sh
+presets.csv
+*.py[co]
+*.sw[op]

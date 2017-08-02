@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The Shetphone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="static/normalize.css">
+    <link rel="stylesheet" href="static/skeleton.css">
+    <link rel="stylesheet" href="static/shetphone.css">
+
+    <style>
+        [v-cloak] { display: none; }
+    </style>
+</head>
+<body>
+    <div id="shetphone" class="container">
+        <h1 class="u-full-width">
+            The Shetphone
+        </h1>
+        <div class="row">
+            <div class="eight columns log" v-cloak>{{ log }}</div>
+            <div class="four columns">
+                <button class="button" @click="setup()">Refresh token</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="eight columns">
+                <!-- Dialer input -->
+                <div class="row input-group input-group-sm" v-cloak>
+
+                    <select name="countryCode" v-model="countryCode">
+                            <option v-for="country in countries" v-bind:value="country.cc">{{ country.name }} (+{{ country.cc }})</option>
+                    </select>
+                    <input type="tel" class="form-control" v-model="currentNumber">
+
+                    <button class="button" @click="reset()" :disabled="!currentNumber">Clear</button>
+                </div>
+            </div>
+
+            <div class="four columns">
+                <div class="row">
+                    <select name="preset" v-if="presets.length">
+                        <option v-for="preset in presets" v-bind:value="preset.index">
+                            {{ preset.name }}
+                        </option>
+                    </select>
+                    <button class="button-primary" @click="loadPreset()" v-if="presets.length">Load preset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Audio Controls -->
+            <div class="two columns">&nbsp;</div>
+            <div class="one columns controls">
+                <button class="circle green" @click="connect()"
+                    :disabled="!canConnect">
+                    <i class="fa fa-fw fa-phone"
+                        :class="[ (onPhone || ringing) ? 'fa-close': 'fa-phone' ]"></i>
+                </button>
+
+                <button class="circle red" @click="disconnect()"
+                    :disabled="!onPhone && !ringing">
+                    <i class="fa fa-fw fa-phone"
+                        :class="[ (onPhone || ringing) ? 'fa-close': 'fa-phone' ]"></i>
+                </button>
+
+                <button class="circle" :disabled="!onPhone" @click="toggleMute">
+                    <i class="fa fa-fw"
+                        :class="[ muted ? 'fa-microphone-slash': 'fa-microphone' ]"></i>
+                </button>
+            </div>
+
+            <!-- DTMF Tone interface -->
+            <div class="nine columns keys" v-cloak>
+                <div class="key-row">
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('1')">1</button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('2')">2
+                        <span>A B C</span>
+                    </button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('3')">3
+                        <span>D E F</span>
+                    </button>
+                </div>
+                <div class="key-row">
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('4')">4
+                        <span>G H I</span>
+                    </button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('5')">5
+                        <span>J K L</span>
+                    </button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('6')">6
+                        <span>M N O</span>
+                    </button>
+                </div>
+                <div class="key-row">
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('7')">7
+                        <span>P Q R S</span>
+                    </button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('8')">8
+                        <span>T U V</span>
+                    </button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('9')">9
+                        <span>W X Y Z</span>
+                    </button>
+                </div>
+                <div class="key-row">
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('*')">*</button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('0')">0</button>
+                    <button class="circle" :disabled="!onPhone" @click="sendDigit('#')">#</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="//media.twiliocdn.com/sdk/js/client/v1.3/twilio.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="static/vue.min.js"></script>
+    <script src="static/shetphone.js"></script>
+</body>
+</html>

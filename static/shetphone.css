@@ -1,0 +1,112 @@
+h1 {
+  margin-bottom: 10px;
+}
+
+h1:before {
+  background-image: url(shetphone.png);
+  background-size: 66px 40px;
+  width: 66px;
+  height: 40px;
+  display: inline-block;
+  content: "";
+}
+
+p {
+  font-size: 10px;
+  color: #787878;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}
+
+textarea:hover,  input:hover, textarea:active, input:active, textarea:focus, 
+button:focus, button:active, button:hover, label:focus, button:active, 
+button.active {
+  outline:0px !important;
+  -webkit-appearance:none;
+}
+
+#shetphone {
+  margin: 20px auto;
+  padding: 0;
+  max-width: 800px;
+}
+
+.green { background-color: #5cb85c; color: white; }
+.red { background-color: #d9534f; color: white; }
+
+.fa.fa-phone {
+  font-size: 1.5em;
+  padding-top: 4px;
+}
+
+.red .fa.fa-phone {
+  padding-top: 8px;
+  padding-bottom: 6px;
+  -webkit-transform: rotate(135deg);
+  -moz-transform: rotate(135deg);
+  -o-transform: rotate(135deg);
+  -ms-transform: rotate(135deg);
+}
+
+.dropdown-menu li a {
+  padding: 3px 10px;
+}
+
+.circle {
+  width: 49px;
+  height: 49px;
+  text-align: center;
+  padding: 5px 0;
+  margin-right: 10px;
+  font-size: 20px;
+  line-height: 2.00;
+  border-radius: 30px;
+}
+
+.controls, .keys {
+  padding-top: 10px;
+}
+
+.controls button {
+  display: block;
+  margin-bottom: 30px;
+}
+
+.keys {
+  color: #fff;
+}
+
+.key-row {
+  margin-bottom: 20px;
+}
+
+.key-row button {
+  font-weight: 100;
+}
+
+.key-row button span {
+  display: block;
+  padding-top: 2px;
+  font-size: 10px;
+  color: #787878;
+}
+
+.log {
+  background-color: #ddd;
+  text-align: center;
+  color: #787878;
+  padding: 7px;
+  border-radius: 4px;
+}
+
+.row {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-right: auto;
+  margin-left: auto;
+}
