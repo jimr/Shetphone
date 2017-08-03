@@ -22,7 +22,13 @@
         <div class="row">
             <div class="eight columns log" v-cloak>{{ log }}</div>
             <div class="four columns">
-                <button class="button" @click="setup()">Refresh token</button>
+                <button class="button" @click="setup()"
+                    :disabled="online"
+                    :title="[ online ? '' : 'The Shetphone is offline' ]">
+                  <i class="fa fa-fw"
+                      :class="[ online ? 'fa-link': 'fa-chain-broken' ]"></i>
+                  Reset token
+                </button>
             </div>
         </div>
         <div class="row">
@@ -31,11 +37,15 @@
                 <div class="row input-group input-group-sm" v-cloak>
 
                     <select name="countryCode" v-model="countryCode">
-                            <option v-for="country in countries" v-bind:value="country.cc">{{ country.name }} (+{{ country.cc }})</option>
+                      <option v-for="country in countries" v-bind:value="country.cc">
+                      {{ country.name }} (+{{ country.cc }})
+                      </option>
                     </select>
                     <input type="tel" class="form-control" v-model="currentNumber">
 
-                    <button class="button" @click="reset()" :disabled="!currentNumber">Clear</button>
+                    <button class="button" @click="clear()" :disabled="!currentNumber">
+                      Clear
+                    </button>
                 </div>
             </div>
 
@@ -46,7 +56,9 @@
                             {{ preset.name }}
                         </option>
                     </select>
-                    <button class="button-primary" @click="loadPreset()" v-if="presets.length">Load preset</button>
+                    <button class="button-primary" @click="loadPreset()" v-if="presets.length">
+                      Load preset
+                    </button>
                 </div>
             </div>
         </div>
@@ -115,7 +127,7 @@
         </div>
     </div>
 
-    <script src="//media.twiliocdn.com/sdk/js/client/v1.3/twilio.min.js"></script>
+    <script src="//media.twiliocdn.com/sdk/js/client/v1.4/twilio.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="static/libphonenumber-js.min.js"></script>
     <script src="static/vue.min.js"></script>

@@ -10,6 +10,7 @@ new Vue({
     connection: null,
     incoming: null,
     log: 'connecting...',
+    online: false,
     countries: [
       { name: 'United States', cc: '1', code: 'us' },
       { name: 'Great Britain', cc: '44', code: 'gb' },
@@ -41,15 +42,13 @@ new Vue({
     Twilio.Device.connect(function(connection) {
       self.incoming = null;
       self.onPhone = true;
-      var number = connection.message.number;;
-      if (!number) {
-        number = connection.parameters['From'];
-      }
+      var number = self.getNumber(connection);
       self.log = 'connected to ' + self.formatNumber(number);
     });
 
     Twilio.Device.incoming(function (connection) {
-      self.log = 'incoming call from ' + self.formatNumber(connection.parameters['From']);
+      var number = self.getNumber(connection);
+      self.log = 'incoming call from ' + self.formatNumber(number);
       self.incoming = connection;
     });
 
@@ -60,6 +59,14 @@ new Vue({
 
     Twilio.Device.ready(function() {
       self.log = 'ready';
+    });
+
+    Twilio.Device.offline(function(device) {
+      self.online = false;
+    });
+
+    Twilio.Device.error(function (e) {
+      self.log = 'Error: ' + e.message;
     });
   },
 
@@ -79,7 +86,9 @@ new Vue({
       return false;
     },
     canConnect: function() {
-      if (this.incoming !== null) {
+      if (!this.online) {
+        return false;
+      } else if (this.incoming !== null) {
         return this.incoming.status() === "pending";
       } else if (this.connection === null) {
         return this.validPhone;
@@ -107,6 +116,7 @@ new Vue({
       // Fetch Twilio capability token from the server
       $.getJSON('token').done(function(data) {
         Twilio.Device.setup(data.token);
+        window.app.online = true;
       }).fail(function(err) {
         console.log(err);
         window.app.log = 'could not fetch token, see console.log';
@@ -134,13 +144,12 @@ new Vue({
       this.countryCode = preset.cc;
     },
 
-    reset: function() {
+    clear: function() {
       this.currentNumber = '';
       this.countryCode = '44';
     },
 
-    // Make an outbound call with the current number,
-    // or hang up the current call
+    // Make an outbound call with the current number or answer an incoming call
     connect: function() {
       if (!this.onPhone) {
         this.muted = false;
@@ -150,7 +159,6 @@ new Vue({
           this.connection = this.incoming;
           this.connection.accept();
         } else {
-          // make outbound call with current number
           var n = '+' + this.countryCode + this.currentNumber.replace(/\D/g, '');
           this.connection = Twilio.Device.connect({ number: n });
           this.log = 'calling ' + this.formatNumber(n);
@@ -170,6 +178,17 @@ new Vue({
     // Handle numeric buttons
     sendDigit: function(digit) {
       this.connection.sendDigits(digit);
+    },
+
+    getNumber: function(connection) {
+      var number = null;
+      if (connection.message) {
+        number = connection.message.number;;
+      }
+      if (!number) {
+        number = connection.parameters['From'];
+      }
+      return number;
     },
   }
 });
