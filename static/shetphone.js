@@ -94,8 +94,6 @@ new Vue({
       try {
         var country = libphonenumber.parse(number).country;
         formatted = libphonenumber.format(number, country, 'International');
-        console.log(country);
-        console.log(formatted);
         return formatted;
       } catch(err) {
         return number;
