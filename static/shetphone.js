@@ -41,11 +41,15 @@ new Vue({
     Twilio.Device.connect(function(connection) {
       self.incoming = null;
       self.onPhone = true;
-      self.log = 'connected to ' + connection.parameters['From'];
+      var number = connection.message.number;;
+      if (!number) {
+        number = connection.parameters['From'];
+      }
+      self.log = 'connected to ' + self.formatNumber(number);
     });
 
     Twilio.Device.incoming(function (connection) {
-      self.log = 'incoming call from ' + connection.parameters['From'];
+      self.log = 'incoming call from ' + self.formatNumber(connection.parameters['From']);
       self.incoming = connection;
     });
 
@@ -86,6 +90,18 @@ new Vue({
   },
 
   methods: {
+    formatNumber: function(number) {
+      try {
+        var country = libphonenumber.parse(number).country;
+        formatted = libphonenumber.format(number, country, 'International');
+        console.log(country);
+        console.log(formatted);
+        return formatted;
+      } catch(err) {
+        return number;
+      }
+    },
+
     setup: function() {
       this.log = 'connecting...';
       window.app = this;
@@ -139,7 +155,7 @@ new Vue({
           // make outbound call with current number
           var n = '+' + this.countryCode + this.currentNumber.replace(/\D/g, '');
           this.connection = Twilio.Device.connect({ number: n });
-          this.log = 'calling ' + n;
+          this.log = 'calling ' + this.formatNumber(n);
         }
       }
     },

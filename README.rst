@@ -4,12 +4,14 @@ The Shetphone
 
 Make and receive Twilio_-powered phone calls in your web browser.
 Powered by Flask_ and Vue.js_, and largely derived from example code[1_] [2_] from Twilio Developer Education.
-Icons by `Font Awesome`_.
+Icons by `Font Awesome`_, number formatting by libphonenumber-js_, styles mostly by Skeleton_.
 
 .. _Twilio: https://www.twilio.com/
 .. _Flask: http://flask.pocoo.org/
 .. _Vue.js: https://vuejs.org/
 .. _`Font Awesome`: http://fontawesome.io/
+.. _libphonenumber-js: https://github.com/catamphetamine/libphonenumber-js
+.. _Skeleton: http://getskeleton.com/
 .. _1: https://github.com/TwilioDevEd/clicktocall-flask
 .. _2: https://github.com/TwilioDevEd/browser-dialer-vue
 
@@ -36,7 +38,7 @@ From your Twilio account, you'll need to buy a phone number and hook it up to a 
 Presets
 =======
 
-THe Shetphone supports presets in case you need to call the same numbers frequently.
+The Shetphone supports presets in case you need to call the same numbers frequently.
 All you need to do is make a ``presets.csv`` file next to ``app.py`` that has three columns: alias, country code, and number.
 See ``presets.csv.example`` for the format.
 The numbers are served to the application via the ``/presets`` route, so if you wanted to get fancy you could change the code to read from another source pretty easily.
@@ -58,10 +60,9 @@ Why Shetphone?
 
 Because I'm in Shetland, I have no mobile signal, and I need a phone.
 
-|Shetphone|
-
-.. |Shetphone| image:: https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Flag_of_Shetland.svg/200px-Flag_of_Shetland.svg.png
+.. image:: https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Flag_of_Shetland.svg/200px-Flag_of_Shetland.svg.png
     :height: 120 px
     :width: 200 px
     :scale: 50 %
-    :align: bottom
+    :align: center
+    :target: http://www.shetland.org/
