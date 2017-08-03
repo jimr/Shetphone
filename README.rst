@@ -55,6 +55,12 @@ Notes on deployment
 You probably want all routes except ``/voice`` to be restricted, otherwise anyone will be able to use your Shetphone.
 The easiest way to achieve that is by setting up HTTP basic authentication in a proxy in front of the ``gunicorn`` server.
 
+TODO
+====
+* Catch non-app errors (websocket issues, etc) and either reload or make the user aware
+* Deal with token expiration - Twilio raises an exception, we just need to acknowledge it and act
+* Capture numeric key presses and pass to ``connection.sendDigits()``
+
 Why Shetphone?
 ==============
 
