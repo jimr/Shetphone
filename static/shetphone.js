@@ -50,6 +50,7 @@ new Vue({
       var number = self.getNumber(connection);
       self.log = 'incoming call from ' + self.formatNumber(number);
       self.incoming = connection;
+      self.notify(self.log);
     });
 
     Twilio.Device.cancel(function() {
@@ -111,7 +112,11 @@ new Vue({
 
     setup: function() {
       var self = this;
-      this.log = 'connecting...';
+      self.log = 'connecting...';
+
+      Notification.requestPermission().then(function(result) {
+        //
+      });
 
       // Fetch Twilio capability token from the server
       $.getJSON('token').done(function(data) {
@@ -190,6 +195,18 @@ new Vue({
       }
       return number;
     },
+
+    notify: function(body) {
+      var self = this;
+      var options = {
+        body: body,
+        icon: 'static/shetphone.png'
+      };
+      var n = new Notification('The Shetphone', options);
+      n.onclick = function(event) {
+        self.connect();
+      };
+    }
   }
 });
 })();
