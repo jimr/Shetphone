@@ -110,20 +110,20 @@ new Vue({
     },
 
     setup: function() {
+      var self = this;
       this.log = 'connecting...';
-      window.app = this;
 
       // Fetch Twilio capability token from the server
       $.getJSON('token').done(function(data) {
         Twilio.Device.setup(data.token);
-        window.app.online = true;
+        self.online = true;
       }).fail(function(err) {
         console.log(err);
-        window.app.log = 'could not fetch token, see console.log';
+        self.log = 'could not fetch token, see console.log';
       });
 
       $.getJSON('presets').done(function(data) {
-        window.app.presets = data.presets;
+        self.presets = data.presets;
       });
     },
 
@@ -192,5 +192,4 @@ new Vue({
     },
   }
 });
-
 })();
