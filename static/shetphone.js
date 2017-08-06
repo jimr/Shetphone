@@ -221,7 +221,7 @@ new Vue({
     pressButton: function(digit) {
       var button = '#';
       if (!isNaN(digit)) {
-        button += 'num' + parseInt(digit);
+        button += 'num' + digit;
       } else {
         if (digit === '#') {
           button += 'hash';
