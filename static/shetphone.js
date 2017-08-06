@@ -69,6 +69,13 @@ new Vue({
     Twilio.Device.error(function (e) {
       self.log = 'Error: ' + e.message;
     });
+
+    document.addEventListener('keydown', function(event) {
+      var buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '*', '#'];
+      if (self.onPhone && event.key in buttons) {
+        self.sendDigit(event.key);
+      }
+    });
   },
 
   computed: {

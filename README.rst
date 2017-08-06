@@ -58,7 +58,6 @@ The easiest way to achieve that is by setting up HTTP basic authentication in a 
 TODO
 ====
 * Catch non-app errors (websocket issues, etc) and either reload or make the user aware
-* Capture numeric key presses and pass to ``connection.sendDigits()``
 
 Why Shetphone?
 ==============
