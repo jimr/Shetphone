@@ -70,9 +70,10 @@ new Vue({
       self.log = 'Error: ' + e.message;
     });
 
+    // respond to keyboard input 
     document.addEventListener('keydown', function(event) {
-      var buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '*', '#'];
-      if (self.onPhone && event.key in buttons) {
+      var buttons = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#'];
+      if (self.onPhone && buttons.indexOf(event.key) >= 0) {
         self.sendDigit(event.key);
       }
     });
@@ -189,6 +190,7 @@ new Vue({
 
     // Handle numeric buttons
     sendDigit: function(digit) {
+      this.pressButton(digit);
       this.connection.sendDigits(digit);
     },
 
@@ -213,6 +215,28 @@ new Vue({
       n.onclick = function(event) {
         self.connect();
       };
+    },
+
+    // add a fake 'active' state when responding to keyboard input
+    pressButton: function(digit) {
+      var button = '#';
+      if (!isNaN(digit)) {
+        button += 'num' + parseInt(digit);
+      } else {
+        if (digit === '#') {
+          button += 'hash';
+        } else if (digit === '*') {
+          button += 'asterisk';
+        }
+      }
+      // we use a CSS animation to fade in / out so we have to wait until it's
+      // done before removing the class
+      $(button).addClass('active').delay(750).queue(
+        function(next) {
+          $(this).removeClass('active');
+          next();
+        }
+      );
     }
   }
 });

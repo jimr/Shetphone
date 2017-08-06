@@ -23,6 +23,21 @@ button:disabled {
   opacity: .65;
 }
 
+@keyframes pressed {
+  from {
+    background-color: #ddd;
+  }
+
+  to {
+    background-color: #fff;
+  }
+}
+
+.keys button.active {
+  background-color: #fff;
+  animation: pressed 0.75s ease-in-out forwards;
+}
+
 textarea:hover,  input:hover, textarea:active, input:active, textarea:focus, 
 button:focus, button:active, button:hover, label:focus, button:active, 
 button.active {

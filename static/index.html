@@ -88,40 +88,40 @@
             <!-- DTMF Tone interface -->
             <div class="nine columns keys" v-cloak>
                 <div class="key-row">
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('1')">1</button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('2')">2
+                    <button id="num1" class="circle" :disabled="!onPhone" @click="sendDigit('1')">1</button>
+                    <button id="num2" class="circle" :disabled="!onPhone" @click="sendDigit('2')">2
                         <span>A B C</span>
                     </button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('3')">3
+                    <button id="num3" class="circle" :disabled="!onPhone" @click="sendDigit('3')">3
                         <span>D E F</span>
                     </button>
                 </div>
                 <div class="key-row">
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('4')">4
+                    <button id="num4" class="circle" :disabled="!onPhone" @click="sendDigit('4')">4
                         <span>G H I</span>
                     </button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('5')">5
+                    <button id="num5" class="circle" :disabled="!onPhone" @click="sendDigit('5')">5
                         <span>J K L</span>
                     </button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('6')">6
+                    <button id="num6" class="circle" :disabled="!onPhone" @click="sendDigit('6')">6
                         <span>M N O</span>
                     </button>
                 </div>
                 <div class="key-row">
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('7')">7
+                    <button id="num7" class="circle" :disabled="!onPhone" @click="sendDigit('7')">7
                         <span>P Q R S</span>
                     </button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('8')">8
+                    <button id="num8" class="circle" :disabled="!onPhone" @click="sendDigit('8')">8
                         <span>T U V</span>
                     </button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('9')">9
+                    <button id="num9" class="circle" :disabled="!onPhone" @click="sendDigit('9')">9
                         <span>W X Y Z</span>
                     </button>
                 </div>
                 <div class="key-row">
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('*')">*</button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('0')">0</button>
-                    <button class="circle" :disabled="!onPhone" @click="sendDigit('#')">#</button>
+                    <button id="asterisk" class="circle" :disabled="!onPhone" @click="sendDigit('*')">*</button>
+                    <button id="num0" class="circle" :disabled="!onPhone" @click="sendDigit('0')">0</button>
+                    <button id="hash" class="circle" :disabled="!onPhone" @click="sendDigit('#')">#</button>
                 </div>
             </div>
         </div>
