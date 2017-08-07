@@ -18,6 +18,18 @@ p {
   margin-top: 10px;
 }
 
+#history {
+  list-style-type: none;
+}
+
+.history-enter-active {
+  transition: all 1s;
+}
+
+.history-enter {
+  background-color: #ccc;
+}
+
 button:disabled {
   cursor: not-allowed;
   opacity: .65;

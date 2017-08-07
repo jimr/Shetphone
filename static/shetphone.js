@@ -9,7 +9,8 @@ new Vue({
     onPhone: false,
     connection: null,
     incoming: null,
-    log: 'connecting...',
+    history: [],
+    historyCount: 0,
     online: false,
     countries: [
       { name: 'United States', cc: '1', code: 'us' },
@@ -36,38 +37,39 @@ new Vue({
     Twilio.Device.disconnect(function() {
       self.onPhone = false;
       self.connection = null;
-      self.log = 'call ended';
+      self.log('call ended');
     });
 
     Twilio.Device.connect(function(connection) {
       self.incoming = null;
       self.onPhone = true;
       var number = self.getNumber(connection);
-      self.log = 'connected to ' + self.formatNumber(number);
+      self.log('connected to ' + self.formatNumber(number));
     });
 
     Twilio.Device.incoming(function (connection) {
       var number = self.getNumber(connection);
-      self.log = 'incoming call from ' + self.formatNumber(number);
+      self.log('incoming call from ' + self.formatNumber(number));
       self.incoming = connection;
       self.notify(self.log);
     });
 
     Twilio.Device.cancel(function() {
       self.incoming = null;
-      self.log = 'ready';
+      self.log('call cancelled');
     });
 
     Twilio.Device.ready(function() {
-      self.log = 'ready';
+      self.log('ready');
     });
 
     Twilio.Device.offline(function(device) {
       self.online = false;
+      self.log('gone offline');
     });
 
     Twilio.Device.error(function (e) {
-      self.log = 'Error: ' + e.message;
+      self.log('Error: ' + e.message);
     });
 
     // respond to keyboard input 
@@ -81,6 +83,10 @@ new Vue({
 
   computed: {
     // Computed property to validate the current phone number
+    status: function() {
+      return this.history[0];
+    },
+
     validPhone: function() {
       try {
         return /^([0-9]|#|\*)+$/.test(this.currentNumber.replace(/[-()\s]/g,''));
@@ -88,12 +94,14 @@ new Vue({
         return false;
       }
     },
+
     ringing: function() {
       if (this.incoming !== null) {
         return this.incoming.status() !== "closed";
       }
       return false;
     },
+
     canConnect: function() {
       if (!this.online) {
         return false;
@@ -108,6 +116,14 @@ new Vue({
   },
 
   methods: {
+    log: function(message) {
+      this.historyCount++;
+      this.history.unshift({date: new Date(), message: message });
+      while (this.history.length > 10) {
+        this.history.pop();
+      }
+    },
+
     formatNumber: function(number) {
       try {
         var country = libphonenumber.parse(number).country;
@@ -120,10 +136,10 @@ new Vue({
 
     setup: function() {
       var self = this;
-      self.log = 'connecting...';
+      self.log('connecting...');
 
       Notification.requestPermission().then(function(result) {
-        //
+        self.log('desktop notifications ' + result);
       });
 
       // Fetch Twilio capability token from the server
@@ -132,7 +148,7 @@ new Vue({
         self.online = true;
       }).fail(function(err) {
         console.log(err);
-        self.log = 'could not fetch token, see console.log';
+        self.log('could not fetch token, see console.log');
       });
 
       $.getJSON('presets').done(function(data) {
@@ -155,6 +171,7 @@ new Vue({
       var preset = this.presets[$('select[name=preset]').val()];
       this.currentNumber = preset.number;
       this.countryCode = preset.cc;
+      this.log('loaded preset "' + preset.name + '"');
     },
 
     clear: function() {
@@ -174,7 +191,7 @@ new Vue({
         } else {
           var n = '+' + this.countryCode + this.currentNumber.replace(/\D/g, '');
           this.connection = Twilio.Device.connect({ number: n });
-          this.log = 'calling ' + this.formatNumber(n);
+          this.log('calling ' + this.formatNumber(n));
         }
       }
     },
