@@ -28,7 +28,7 @@ def presets():
             reader = csv.reader(csvfile, delimiter=',')
             for i, row in enumerate(reader):
                 records.append(
-                    dict(index=i, name=row[0], cc=row[1], number=row[2])
+                    dict(index=i, name=row[0], prefix=row[1], number=row[2])
                 )
     return jsonify(presets=records)
 

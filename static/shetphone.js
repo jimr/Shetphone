@@ -3,8 +3,9 @@ new Vue({
   el: '#shetphone',
 
   data: {
-    countryCode: '44',
+    countryPrefix: '44',
     currentNumber: '',
+    formatter: null,
     muted: false,
     onPhone: false,
     connection: null,
@@ -13,23 +14,25 @@ new Vue({
     historyCount: 0,
     online: false,
     countries: [
-      { name: 'United States', cc: '1', code: 'us' },
-      { name: 'Great Britain', cc: '44', code: 'gb' },
-      { name: 'Colombia', cc: '57', code: 'co' },
-      { name: 'Ecuador', cc: '593', code: 'ec' },
-      { name: 'Estonia', cc: '372', code: 'ee' },
-      { name: 'Germany', cc: '49', code: 'de' },
-      { name: 'Hong Kong', cc: '852', code: 'hk' },
-      { name: 'Ireland', cc: '353', code: 'ie' },
-      { name: 'Singapore', cc: '65', code: 'sg' },
-      { name: 'Spain', cc: '34', code: 'es' },
-      { name: 'Brazil', cc: '55', code: 'br' },
+      { name: 'United States', prefix: '1', code: 'US' },
+      { name: 'Great Britain', prefix: '44', code: 'GB' },
+      { name: 'Colombia', prefix: '57', code: 'CO' },
+      { name: 'Ecuador', prefix: '593', code: 'EC' },
+      { name: 'Estonia', prefix: '372', code: 'EE' },
+      { name: 'Germany', prefix: '49', code: 'DE' },
+      { name: 'Hong Kong', prefix: '852', code: 'HK' },
+      { name: 'Ireland', prefix: '353', code: 'IE' },
+      { name: 'Singapore', prefix: '65', code: 'SG' },
+      { name: 'Spain', prefix: '34', code: 'ES' },
+      { name: 'Brazil', prefix: '55', code: 'BR' },
     ],
     presets: []
   },
 
   created: function() {
     var self = this;
+
+    self.formatter = new libphonenumber.asYouType();
 
     self.setup();
 
@@ -76,26 +79,46 @@ new Vue({
     // respond to keyboard input 
     document.addEventListener('keydown', function(event) {
       var buttons = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#'];
-      if (self.onPhone && buttons.indexOf(event.key) >= 0) {
+      if ($('input[type=tel]').is(':focus')) {
+        if (event.key === 'Escape') {
+          self.clear();
+        } else {
+          // Reformat phone number as the user types. Might be annoying if they
+          // try to put their own spaces in. It also won't let you type an
+          // invalid number for that country. Let's hope it's never wrong!
+          self.formatter.reset();
+          self.formatter.reset_country(self.countryCode);
+          self.formatter.input(self.fullNumber);
+          self.currentNumber = self.formatter.format_national_phone_number('');
+        }
+      } else if (self.onPhone && buttons.indexOf(event.key) >= 0) {
         self.sendDigit(event.key);
-      } else if (event.key === "Escape" && $('input[type=tel]').is(':focus')) {
-        self.clear();
       }
     });
   },
 
   computed: {
-    // Computed property to validate the current phone number
     status: function() {
       return this.history[0];
     },
 
     validPhone: function() {
       try {
-        return /^([0-9]|#|\*)+$/.test(this.currentNumber.replace(/[-()\s]/g,''));
+        return libphonenumber.isValidNumber(this.fullNumber);
       } catch(err) {
         return false;
       }
+    },
+
+    fullNumber: function() {
+      return '+' + this.countryPrefix + this.currentNumber;
+    },
+
+    countryCode: function() {
+      var self = this;
+      return this.countries.find(function(country) {
+        return country.prefix === self.countryPrefix;
+      }).code;
     },
 
     ringing: function() {
@@ -162,7 +185,7 @@ new Vue({
 
     // Handle country code selection
     selectCountry: function(country) {
-      this.countryCode = country.cc;
+      this.countryPrefix = country.prefix;
     },
 
     // Handle muting
@@ -173,14 +196,15 @@ new Vue({
 
     loadPreset: function() {
       var preset = this.presets[$('select[name=preset]').val()];
+
       this.currentNumber = preset.number;
-      this.countryCode = preset.cc;
+      this.countryPrefix = preset.prefix;
       this.log('Loaded preset "' + preset.name + '"');
     },
 
     clear: function() {
       this.currentNumber = '';
-      this.countryCode = '44';
+      this.countryPrefix = '44';
     },
 
     // Make an outbound call with the current number or answer an incoming call
@@ -193,9 +217,9 @@ new Vue({
           this.connection = this.incoming;
           this.connection.accept();
         } else {
-          var n = '+' + this.countryCode + this.currentNumber.replace(/\D/g, '');
-          this.connection = Twilio.Device.connect({ number: n });
+          var n = this.fullNumber;
           this.log('Calling ' + this.formatNumber(n));
+          this.connection = Twilio.Device.connect({ number: n });
         }
       }
     },

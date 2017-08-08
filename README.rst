@@ -4,7 +4,7 @@ The Shetphone
 
 Make and receive Twilio_-powered phone calls in your web browser.
 Powered by Flask_ and Vue.js_, and largely derived from example code[1_] [2_] from Twilio Developer Education.
-Icons by `Font Awesome`_, number formatting by libphonenumber-js_, styles mostly by Skeleton_.
+Icons by `Font Awesome`_, number validation & formatting by libphonenumber-js_, styles mostly by Skeleton_.
 
 .. _Twilio: https://www.twilio.com/
 .. _Flask: http://flask.pocoo.org/

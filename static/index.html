@@ -23,9 +23,9 @@
             <div class="six columns">
                 <!-- Dialer input -->
                 <div class="row input-group input-group-sm" v-cloak>
-                    <select name="countryCode" v-model="countryCode">
-                      <option v-for="country in countries" v-bind:value="country.cc">
-                          {{ country.name }} (+{{ country.cc }})
+                    <select name="countryPrefix" v-model="countryPrefix">
+                      <option v-for="country in countries" v-bind:value="country.prefix">
+                          {{ country.name }} (+{{ country.prefix }})
                       </option>
                     </select>
                     <input type="tel" class="form-control" v-model="currentNumber">
