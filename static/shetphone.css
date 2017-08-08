@@ -123,14 +123,6 @@ button.active {
   color: #787878;
 }
 
-.log {
-  background-color: #ddd;
-  text-align: center;
-  color: #787878;
-  padding: 7px;
-  border-radius: 4px;
-}
-
 .row {
   margin-bottom: 10px;
   margin-top: 10px;

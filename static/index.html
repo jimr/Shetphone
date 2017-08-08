@@ -20,7 +20,7 @@
             The Shetphone
         </h1>
         <div class="row">
-            <div class="seven columns">
+            <div class="six columns">
                 <!-- Dialer input -->
                 <div class="row input-group input-group-sm" v-cloak>
                     <select name="countryCode" v-model="countryCode">
@@ -29,13 +29,10 @@
                       </option>
                     </select>
                     <input type="tel" class="form-control" v-model="currentNumber">
-                    <button class="button" @click="clear()" :disabled="!currentNumber">
-                        Clear
-                    </button>
                 </div>
             </div>
 
-            <div class="five columns">
+            <div class="six columns">
                 <div class="row">
                     <select name="preset" v-cloak v-if="presets.length">
                         <option v-for="preset in presets" v-bind:value="preset.index">
@@ -50,7 +47,6 @@
         </div>
 
         <div class="row">
-            <!-- Audio Controls -->
             <div class="one columns">&nbsp;</div>
             <div class="one columns controls">
                 <button class="circle green" @click="connect()"
@@ -78,7 +74,7 @@
             </div>
 
             <!-- DTMF Tone interface -->
-            <div class="five columns keys" v-cloak>
+            <div class="four columns keys" v-cloak>
                 <div class="key-row">
                     <button id="num1" class="circle" :disabled="!onPhone" @click="sendDigit('1')">1</button>
                     <button id="num2" class="circle" :disabled="!onPhone" @click="sendDigit('2')">2
@@ -116,7 +112,7 @@
                     <button id="hash" class="circle" :disabled="!onPhone" @click="sendDigit('#')">#</button>
                 </div>
             </div>
-            <div class="five columns">
+            <div class="six columns">
                 <transition-group name="history" tag="ol" id="history" reversed="true" :start="[ historyCount > 10 ? historyCount : history.length]" v-cloak>
                     <li v-for="record in history" v-bind:key="record" v-bind:title="record.date.toLocaleString()">
                         {{ record.date.toLocaleTimeString() }} {{ record.message }}

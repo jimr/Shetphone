@@ -37,35 +37,36 @@ new Vue({
     Twilio.Device.disconnect(function() {
       self.onPhone = false;
       self.connection = null;
-      self.log('call ended');
+      self.log('Call ended');
     });
 
     Twilio.Device.connect(function(connection) {
       self.incoming = null;
       self.onPhone = true;
       var number = self.getNumber(connection);
-      self.log('connected to ' + self.formatNumber(number));
+      self.log('Connected to ' + self.formatNumber(number));
     });
 
     Twilio.Device.incoming(function (connection) {
       var number = self.getNumber(connection);
-      self.log('incoming call from ' + self.formatNumber(number));
+      self.log('Incoming call from ' + self.formatNumber(number));
       self.incoming = connection;
       self.notify(self.log);
     });
 
     Twilio.Device.cancel(function() {
       self.incoming = null;
-      self.log('call cancelled');
+      self.log('Call cancelled');
     });
 
     Twilio.Device.ready(function() {
-      self.log('ready');
+      self.online = true;
+      self.log('Online');
     });
 
     Twilio.Device.offline(function(device) {
       self.online = false;
-      self.log('gone offline');
+      self.log('Offline');
     });
 
     Twilio.Device.error(function (e) {
@@ -77,6 +78,8 @@ new Vue({
       var buttons = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#'];
       if (self.onPhone && buttons.indexOf(event.key) >= 0) {
         self.sendDigit(event.key);
+      } else if (event.key === "Escape" && $('input[type=tel]').is(':focus')) {
+        self.clear();
       }
     });
   },
@@ -136,11 +139,12 @@ new Vue({
 
     setup: function() {
       var self = this;
-      self.log('connecting...');
 
       Notification.requestPermission().then(function(result) {
-        self.log('desktop notifications ' + result);
+        self.log('Desktop notifications ' + result);
       });
+
+      self.log('Connecting...');
 
       // Fetch Twilio capability token from the server
       $.getJSON('token').done(function(data) {
@@ -148,7 +152,7 @@ new Vue({
         self.online = true;
       }).fail(function(err) {
         console.log(err);
-        self.log('could not fetch token, see console.log');
+        self.log('Could not fetch token, see console.log');
       });
 
       $.getJSON('presets').done(function(data) {
@@ -171,7 +175,7 @@ new Vue({
       var preset = this.presets[$('select[name=preset]').val()];
       this.currentNumber = preset.number;
       this.countryCode = preset.cc;
-      this.log('loaded preset "' + preset.name + '"');
+      this.log('Loaded preset "' + preset.name + '"');
     },
 
     clear: function() {
@@ -191,7 +195,7 @@ new Vue({
         } else {
           var n = '+' + this.countryCode + this.currentNumber.replace(/\D/g, '');
           this.connection = Twilio.Device.connect({ number: n });
-          this.log('calling ' + this.formatNumber(n));
+          this.log('Calling ' + this.formatNumber(n));
         }
       }
     },
