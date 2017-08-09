@@ -47,14 +47,14 @@ new Vue({
       self.incoming = null;
       self.onPhone = true;
       var number = self.getNumber(connection);
-      self.log('Connected to ' + self.formatNumber(number));
     });
 
     Twilio.Device.incoming(function (connection) {
       var number = self.getNumber(connection);
-      self.log('Incoming call from ' + self.formatNumber(number));
+      var message = 'Incoming call from ' + self.formatNumber(number);
       self.incoming = connection;
-      self.notify(self.log);
+      self.log(message);
+      self.notify(message);
     });
 
     Twilio.Device.cancel(function() {
