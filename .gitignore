@@ -1,4 +1,6 @@
 run.sh
 presets.csv
+.htpasswd
+uwsgi.ini
 *.py[co]
 *.sw[op]

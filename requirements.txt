@@ -1,3 +1,8 @@
 Flask==0.12.2
+flask-login==0.4.0
+flask-socketio==2.9.2
 twilio~=6.5.0
-gunicorn==19.7.1
+passlib==1.7.1
+
+uwsgi==2.0.15
+gevent-1.2.2

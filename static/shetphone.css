@@ -2,6 +2,11 @@ h1 {
   margin-bottom: 10px;
 }
 
+h1 a {
+  display: inline-block;
+  float: right;
+}
+
 h1:before {
   background-image: url(shetphone.png);
   background-size: 60px 36px;

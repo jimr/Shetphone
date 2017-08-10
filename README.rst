@@ -3,12 +3,16 @@ The Shetphone
 =============
 
 Make and receive Twilio_-powered phone calls in your web browser.
-Powered by Flask_ and Vue.js_, and largely derived from example code[1_] [2_] from Twilio Developer Education.
+Powered by Flask_ + Flask-Login_, Vue.js_, and Socket.io_ + Flask-SocketIO_.
 Icons by `Font Awesome`_, number validation & formatting by libphonenumber-js_, styles mostly by Skeleton_.
+Originally derived from example code[1_] [2_] from Twilio Developer Education.
 
 .. _Twilio: https://www.twilio.com/
 .. _Flask: http://flask.pocoo.org/
+.. _Flask-Login: https://flask-login.readthedocs.io/en/latest/
 .. _Vue.js: https://vuejs.org/
+.. _Socket.io: https://socket.io/
+.. _Flask-SocketIO: https://flask-socketio.readthedocs.io/en/latest/
 .. _`Font Awesome`: http://fontawesome.io/
 .. _libphonenumber-js: https://github.com/catamphetamine/libphonenumber-js
 .. _Skeleton: http://getskeleton.com/
@@ -29,11 +33,25 @@ In order for the code to work, you'll need to define the following environment v
     TWILIO_AUTH_TOKEN
     TWILIO_APP_SID
     TWILIO_NUMBER
-    TWILIO_IDENTITY
-
-The last one (``TWILIO_IDENTITY``) is required to match up incoming requests to those linked with the token we generate for ourselves.
 
 From your Twilio account, you'll need to buy a phone number and hook it up to a TwiML app that sends voice requests to the ``/voice`` route.
+
+Running the server
+==================
+
+First, copy ``uwsgi.ini.example`` to ``uwsgi.ini`` and edit as required.
+Then, in your virtual environment, run ``uwsgi --ini uwsgi.ini``.
+Once that's done, stick an HTTP proxy in front of it and host it somewhere Twilio can see it.
+I've included an example NGINX configuration file that covers how to set up all the various routes, including the websockets.
+
+Notes on deployment
+===================
+
+User authentication is via an ``.htpasswd`` file that you need to put next to ``app.py``.
+The file can be created with the ``htpasswd`` command as you would to use with Apache HTTPD or NGINX.
+Users are authenticated against this using PassLib_.
+
+.. _PassLib: http://passlib.readthedocs.io/en/stable/
 
 Presets
 =======
@@ -42,24 +60,6 @@ The Shetphone supports presets in case you need to call the same numbers frequen
 All you need to do is make a ``presets.csv`` file next to ``app.py`` that has three columns: alias, country code, and number.
 See ``presets.csv.example`` for the format.
 The numbers are served to the application via the ``/presets`` route, so if you wanted to get fancy you could change the code to read from another source pretty easily.
-
-Running the server
-==================
-
-In your virtual environment, ``gunicorn app:app``.
-Once that's done, stick an HTTP proxy in front of it and host it somewhere Twilio can see it.
-
-Notes on deployment
-===================
-
-You probably want all routes except ``/voice`` to be restricted, otherwise anyone will be able to use your Shetphone.
-The easiest way to achieve that is by setting up HTTP basic authentication in a proxy in front of the ``gunicorn`` server.
-
-TODO
-====
-* Catch non-app errors (websocket issues, etc) and either reload or make the user aware
-* Listen for call state changes using Twilio status callbacks
-* Switch to in-app auth to protect sensitive URLs
 
 Why Shetphone?
 ==============

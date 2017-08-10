@@ -8,11 +8,11 @@ new Vue({
     formatter: null,
     muted: false,
     onPhone: false,
-    connection: null,
+    online: false,
     incoming: null,
+    connection: null,
     history: [],
     historyCount: 0,
-    online: false,
     countries: [
       { name: 'United States', prefix: '1', code: 'US' },
       { name: 'Great Britain', prefix: '44', code: 'GB' },
@@ -34,13 +34,53 @@ new Vue({
 
     self.formatter = new libphonenumber.asYouType();
 
-    self.setup();
+    self.fetchToken();
+
+    $.getJSON('presets').done(function(data) {
+      self.presets = data.presets;
+    });
+
+    Notification.requestPermission().then(function(result) {
+      self.log('Desktop notifications ' + result);
+    });
+
+    // Set up a socket to handle call status change events from Twilio
+    socket = io(
+      location.protocol + '//' + document.domain + ':' + location.port,
+      {path: location.pathname + 'socket.io/'}
+    );
+
+    socket.on('connect', function(message) {
+      if (message !== undefined) {
+        self.log('Socket connected as ' + message);
+      }
+    });
+
+    socket.on('logout', function() {
+      self.log('Logout detected.');
+      self.fetchToken();
+    });
+
+    socket.on('disconnect', function() {
+      self.log('Socket disconnected');
+    });
+
+    socket.on('status', function(data) {
+      if (data['Direction'] === 'outbound-dial') {
+        var status = data['CallStatus'];
+        if (status === 'ringing') {
+          self.log('[ringing]');
+        } else if (status === 'in-progress') {
+          self.log('[answered]');
+        }
+      }
+    });
 
     // Configure event handlers for Twilio Device
     Twilio.Device.disconnect(function() {
       self.onPhone = false;
       self.connection = null;
-      self.log('Call ended');
+      self.log('Disconnected')
     });
 
     Twilio.Device.connect(function(connection) {
@@ -160,26 +200,23 @@ new Vue({
       }
     },
 
-    setup: function() {
+    fetchToken: function() {
       var self = this;
 
-      Notification.requestPermission().then(function(result) {
-        self.log('Desktop notifications ' + result);
-      });
+      self.log('Fetching token...');
 
-      self.log('Connecting...');
-
-      // Fetch Twilio capability token from the server
       $.getJSON('token').done(function(data) {
         Twilio.Device.setup(data.token);
         self.online = true;
       }).fail(function(err) {
-        console.log(err);
-        self.log('Could not fetch token, see console.log');
-      });
-
-      $.getJSON('presets').done(function(data) {
-        self.presets = data.presets;
+        self.online = false;
+        // If the token request fails because the user isn't logged in, let's
+        // redirect them to the login page.
+        if (err.status === 401) {
+          window.location = 'login';
+        } else {
+          self.log('Could not fetch token, see console.log');
+        }
       });
     },
 

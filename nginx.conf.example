@@ -1,0 +1,22 @@
+server {
+    # standard server_name, etc bits up here
+    # The rest assumes you want to mount the app under `/shetphone/` as per
+    # `uwsgi.ini.example`. Life would be simpler if it was mounted at `/`.
+    # http://flask.pocoo.org/docs/0.12/deploying/uwsgi/#configuring-nginx
+    # https://flask-socketio.readthedocs.io/en/latest/#using-nginx-as-a-websocket-reverse-proxy
+
+    location /shetphone/socket.io/ {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_pass http://unix:///tmp/shetphone.sock:/socket.io/;
+    }
+
+    location = /shetphone { rewrite ^ /shetphone/; }
+    location /shetphone { try_files $uri @shetphone; }
+    location @shetphone {
+        include uwsgi_params;
+        include proxy_params;
+        proxy_pass http://unix:///tmp/shetphone.sock;
+    }
+}
