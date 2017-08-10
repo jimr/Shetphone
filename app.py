@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import csv
-import json
 import os
-import re
 
 from flask import Flask, jsonify, request, Response, redirect, url_for, abort
 from flask_login import (
     LoginManager, UserMixin, current_user, login_required, login_user,
-    logout_user, user_logged_out,
+    logout_user,
 )
-from flask_socketio import SocketIO, emit, send
+from flask_socketio import SocketIO, emit
 from passlib.apache import HtpasswdFile
 from twilio.jwt.client import ClientCapabilityToken
 from twilio.twiml.voice_response import VoiceResponse, Dial
@@ -77,8 +75,10 @@ def index():
 
 
 @app.route('/presets', methods=['GET'])
-@login_required
 def presets():
+    if not current_user.is_authenticated:
+        abort(401)
+
     records = []
     if os.path.exists('presets.csv'):
         with open('presets.csv', 'rb') as csvfile:
@@ -92,19 +92,19 @@ def presets():
 
 @app.route('/token', methods=['GET'])
 def token():
-    if current_user.is_authenticated:
-        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
-        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-        application_sid = os.getenv('TWILIO_APP_SID')
-
-        capability = ClientCapabilityToken(account_sid, auth_token, ttl=86400)
-        capability.allow_client_outgoing(application_sid)
-        capability.allow_client_incoming(current_user.id)
-        token = capability.to_jwt()
-
-        return jsonify(identity=current_user.id, token=token.decode('utf-8'))
-    else:
+    if not current_user.is_authenticated:
         abort(401)
+
+    account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+    application_sid = os.getenv('TWILIO_APP_SID')
+
+    capability = ClientCapabilityToken(account_sid, auth_token, ttl=86400)
+    capability.allow_client_outgoing(application_sid)
+    capability.allow_client_incoming(current_user.id)
+    token = capability.to_jwt()
+
+    return jsonify(identity=current_user.id, token=token.decode('utf-8'))
 
 
 @app.route("/voice", methods=['POST'])
