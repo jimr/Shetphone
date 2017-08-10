@@ -13,6 +13,8 @@ new Vue({
     connection: null,
     history: [],
     historyCount: 0,
+    login_url: null,
+    logout_url: null,
     countries: [
       { name: 'United States', prefix: '1', code: 'US' },
       { name: 'Great Britain', prefix: '44', code: 'GB' },
@@ -33,6 +35,11 @@ new Vue({
     var self = this;
 
     self.formatter = new libphonenumber.asYouType();
+
+    $.getJSON('auth-urls').done(function(urls) {
+      self.login_url = urls['login'];
+      self.logout_url = urls['logout'];
+    });
 
     self.fetchToken();
 
@@ -213,7 +220,7 @@ new Vue({
         // If the token request fails because the user isn't logged in, let's
         // redirect them to the login page.
         if (err.status === 401) {
-          window.location = 'login';
+          window.location = self.login_url;
         } else {
           self.log('Could not fetch token, see console.log');
         }
