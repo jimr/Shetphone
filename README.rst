@@ -75,6 +75,7 @@ I've included an example NGINX configuration file that covers how to set up all 
 TODO
 ====
 
+* Route status messages to rooms by incoming number rather than broadcasting the ``status`` event. Currently, all connected clients will get all status messages, which would clearly be confusing.
 * Might be useful to pass incoming calls to more than one client. Not my use-case, but Twilio supports it.
 * Allow multiple outgoing caller IDs per connected client, maybe switching between them depending on the country of the target.
 
