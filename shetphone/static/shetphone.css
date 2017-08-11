@@ -5,6 +5,12 @@ h1 {
 h1 a {
   display: inline-block;
   float: right;
+  color: #787878;
+  opacity: 0.65;
+}
+
+h1 a:hover {
+    color: #d9534f;
 }
 
 h1:before {
@@ -14,13 +20,6 @@ h1:before {
   height: 36px;
   display: inline-block;
   content: "";
-}
-
-p {
-  font-size: 10px;
-  color: #787878;
-  font-style: italic;
-  margin-top: 10px;
 }
 
 #history {

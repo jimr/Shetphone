@@ -2,7 +2,7 @@
 The Shetphone
 =============
 
-Make and receive Twilio_-powered phone calls in your web browser.
+Make and receive Twilio_ phone calls in your web browser.
 Powered by Flask_ + Flask-Login_, Vue.js_, and Socket.io_ + Flask-SocketIO_.
 Icons by `Font Awesome`_, number validation & formatting by libphonenumber-js_, styles mostly by Skeleton_.
 Originally derived from example code[1_] [2_] from Twilio Developer Education.

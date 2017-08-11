@@ -5,6 +5,6 @@ http-socket = /tmp/shetphone.sock
 chmod-socket = 666
 
 http-websockets = true
-mount = /shetphone=app:app
+mount = /shetphone=shetphone.app:app
 manage-script-name = true
 vacuum = true

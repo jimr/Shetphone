@@ -4,68 +4,21 @@ import csv
 import os
 
 from flask import Flask, jsonify, request, Response, redirect, url_for, abort
-from flask_login import (
-    LoginManager, UserMixin, current_user, login_required, login_user,
-    logout_user,
-)
+from flask_login import current_user, login_required
 from flask_socketio import SocketIO, emit
-from passlib.apache import HtpasswdFile
 from twilio.jwt.client import ClientCapabilityToken
 from twilio.twiml.voice_response import VoiceResponse, Dial
+
+from shetphone import auth
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['USE_SESSION_FOR_NEXT'] = True
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"
-
 socketio = SocketIO(app)
 socketio.init_app(app)
 
-ht = HtpasswdFile('.htpasswd')
-
-
-class User(UserMixin):
-    def __init__(self, username):
-        self.id = username
-
-    @staticmethod
-    def get(username):
-        return User(username)
-
-
-
-@login_manager.user_loader
-def load_user(username):
-    return User.get(username)
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if ht.check_password(username, password):
-            user = User.get(username)
-            login_user(user, False)
-            return redirect(url_for('index'))
-        else:
-            return abort(401)
-    else:
-        if current_user.is_authenticated:
-            return redirect(url_for('index'))
-        else:
-            return app.send_static_file('login.html')
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    socketio.emit('logout')
-    return redirect(url_for('login'))
+auth.init_app(app, socketio)
 
 
 @app.route('/')
@@ -74,7 +27,7 @@ def index():
     return app.send_static_file('index.html')
 
 
-@app.route('/presets', methods=['GET'])
+@app.route('/presets')
 def presets():
     if not current_user.is_authenticated:
         abort(401)
@@ -98,7 +51,7 @@ def auth_urls():
     )
 
 
-@app.route('/token', methods=['GET'])
+@app.route('/token')
 def token():
     if not current_user.is_authenticated:
         abort(401)
