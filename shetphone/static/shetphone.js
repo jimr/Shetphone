@@ -83,6 +83,8 @@ new Vue({
       }
     });
 
+    self.socket = socket;
+
     // Configure event handlers for Twilio Device
     Twilio.Device.disconnect(function() {
       self.onPhone = false;
@@ -263,7 +265,10 @@ new Vue({
         } else {
           var n = this.fullNumber;
           this.log('Calling ' + this.formatNumber(n));
-          this.connection = Twilio.Device.connect({ number: n });
+          this.connection = Twilio.Device.connect({
+            number: n,
+            room: this.socket.id
+          });
         }
       }
     },

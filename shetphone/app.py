@@ -7,7 +7,7 @@ from backports.configparser import ConfigParser
 
 from flask import Flask, jsonify, request, Response, redirect, url_for, abort
 from flask_login import current_user, login_required
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, disconnect, emit
 from twilio.jwt.client import ClientCapabilityToken
 from twilio.twiml.voice_response import VoiceResponse, Dial
 
@@ -86,12 +86,17 @@ def voice():
         # clients have more than one assigned.
         clients = dict([(y, x) for (x, y) in numbers.items()])
 
-    if request.form.get('number', '') != '':
+    if 'number' in request.form and 'room' in request.form:
         number = request.form['From'].split(':')[1]
+        # Status callback events are routed to initiating clients
+        callback_url = url_for(
+            'status', room=request.form['room'], _external=True,
+        )
+
         dial = Dial(caller_id=clients[number], answer_on_bridge=True)
         dial.number(
             request.form["number"],
-            status_callback=url_for('status', _external=True),
+            status_callback=callback_url,
             status_callback_event='initiated ringing answered completed',
         )
         resp.append(dial)
@@ -105,9 +110,10 @@ def voice():
     return Response(str(resp), mimetype='text/xml')
 
 
-@app.route("/status", methods=['POST'])
-def status():
-    socketio.emit('status', request.form)
+@app.route("/status/<room>", methods=['POST'])
+def status(room):
+    # `room` is the unique session ID for the client that initiated the call
+    socketio.emit('status', request.form, room=room)
     return Response('ok')
 
 
@@ -116,4 +122,4 @@ def connect_handler():
     if current_user.is_authenticated:
         emit('connect', current_user.id)
     else:
-        return False
+        disconnect()
