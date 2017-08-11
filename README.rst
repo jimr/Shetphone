@@ -2,17 +2,15 @@
 The Shetphone
 =============
 
-Make and receive Twilio_ phone calls in your web browser.
-Powered by Flask_ + Flask-Login_, Vue.js_, and Socket.io_ + Flask-SocketIO_.
+Turn your web browser into a telephone with The Shetphone!
+Powered by Twilio_, Flask_ , Vue.js_, and Socket.io_.
 Icons by `Font Awesome`_, number validation & formatting by libphonenumber-js_, styles mostly by Skeleton_.
 Originally derived from example code[1_] [2_] from Twilio Developer Education.
 
 .. _Twilio: https://www.twilio.com/
 .. _Flask: http://flask.pocoo.org/
-.. _Flask-Login: https://flask-login.readthedocs.io/en/latest/
 .. _Vue.js: https://vuejs.org/
 .. _Socket.io: https://socket.io/
-.. _Flask-SocketIO: https://flask-socketio.readthedocs.io/en/latest/
 .. _`Font Awesome`: http://fontawesome.io/
 .. _libphonenumber-js: https://github.com/catamphetamine/libphonenumber-js
 .. _Skeleton: http://getskeleton.com/
@@ -73,6 +71,12 @@ Running the server
 In your virtual environment, run ``uwsgi --ini shetphone.ini``.
 Once that's done, stick an HTTP proxy in front of it and host it somewhere Twilio can see it.
 I've included an example NGINX configuration file that covers how to set up all the various routes, including the websockets.
+
+TODO
+====
+
+* Might be useful to pass incoming calls to more than one client. Not my use-case, but Twilio supports it.
+* Allow multiple outgoing caller IDs per connected client, maybe switching between them depending on the country of the target.
 
 Why Shetphone?
 ==============
