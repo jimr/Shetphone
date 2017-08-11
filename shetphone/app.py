@@ -3,6 +3,8 @@
 import csv
 import os
 
+from backports.configparser import ConfigParser
+
 from flask import Flask, jsonify, request, Response, redirect, url_for, abort
 from flask_login import current_user, login_required
 from flask_socketio import SocketIO, emit
@@ -10,6 +12,9 @@ from twilio.jwt.client import ClientCapabilityToken
 from twilio.twiml.voice_response import VoiceResponse, Dial
 
 from shetphone import auth
+
+cfg = ConfigParser()
+cfg.read('shetphone.ini')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -71,22 +76,28 @@ def token():
 @app.route("/voice", methods=['POST'])
 def voice():
     resp = VoiceResponse()
-    my_number = os.getenv('TWILIO_NUMBER')
 
-    def for_me(form):
-        return'From' in form and 'To' in form and form['To'] == my_number
+    numbers = dict(cfg['shetphone:numbers'].items())
+    if 'shetphone:clients' in cfg:
+        clients = dict(cfg['shetphone:clients'].items())
+    else:
+        # If preferred client -> number maps aren't provided, we just flip the
+        # number -> client map around, possibly clobbering some numbers if
+        # clients have more than one assigned.
+        clients = dict([(y, x) for (x, y) in numbers.items()])
 
-    if "number" in request.form and request.form["number"] != '':
-        dial = Dial(caller_id=my_number, answer_on_bridge=True)
+    if request.form.get('number', '') != '':
+        number = request.form['From'].split(':')[1]
+        dial = Dial(caller_id=clients[number], answer_on_bridge=True)
         dial.number(
             request.form["number"],
             status_callback=url_for('status', _external=True),
             status_callback_event='initiated ringing answered completed',
         )
         resp.append(dial)
-    elif for_me(request.form):
+    elif request.form['To'] in numbers:
         dial = Dial()
-        dial.client(current_user.id)
+        dial.client(numbers[request.form['To']])
         resp.append(dial)
     else:
         resp.say("We are unable to connect your call at this time.")

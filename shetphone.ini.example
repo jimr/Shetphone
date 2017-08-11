@@ -1,3 +1,9 @@
+[shetphone:numbers]
++442079460174 = you
+
+[shetphone:clients]
+you = +442079460174
+
 [uwsgi]
 master = true
 gevent = 1000

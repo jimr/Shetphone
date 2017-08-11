@@ -1,6 +1,6 @@
 run.sh
 presets.csv
 .htpasswd
-uwsgi.ini
+shetphone.ini
 *.py[co]
 *.sw[op]
