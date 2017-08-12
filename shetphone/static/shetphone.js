@@ -34,8 +34,6 @@ new Vue({
   created: function() {
     var self = this;
 
-    self.formatter = new libphonenumber.asYouType();
-
     $.getJSON('auth-urls').done(function(urls) {
       self.login_url = urls['login'];
       self.logout_url = urls['logout'];
@@ -131,14 +129,6 @@ new Vue({
       if ($('input[type=tel]').is(':focus')) {
         if (event.key === 'Escape') {
           self.clear();
-        } else {
-          // Reformat phone number as the user types. Might be annoying if they
-          // try to put their own spaces in. It also won't let you type an
-          // invalid number for that country. Let's hope it's never wrong!
-          self.formatter.reset();
-          self.formatter.reset_country(self.countryCode);
-          self.formatter.input(self.fullNumber);
-          self.currentNumber = self.formatter.format_national_phone_number('');
         }
       } else if (self.onPhone && buttons.indexOf(event.key) >= 0) {
         self.sendDigit(event.key);
