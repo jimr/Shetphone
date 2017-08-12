@@ -78,6 +78,7 @@ In order to get this to talk to Twilio, you'll need to use a proxy service such 
 TODO
 ====
 
+* Validate presets and incoming / outgoing numbers on load
 * Might be useful to pass incoming calls to more than one client. Not my use-case, but Twilio supports it.
 * Allow multiple outgoing caller IDs per connected client, maybe switching between them depending on the country of the target.
 
