@@ -1,7 +1,18 @@
-[shetphone:numbers]
+[app]
+secret_key =
+
+[twilio]
+account_sid =
+application_sid =
+auth_token =
+
+[presets]
+Mum = +44 20 7946 0174
+
+[numbers]
 +442079460174 = you
 
-[shetphone:clients]
+[clients]
 you = +442079460174
 
 [uwsgi]
@@ -9,7 +20,6 @@ master = true
 gevent = 1000
 http-socket = /tmp/shetphone.sock
 chmod-socket = 666
-
 http-websockets = true
 mount = /shetphone=shetphone.app:app
 manage-script-name = true

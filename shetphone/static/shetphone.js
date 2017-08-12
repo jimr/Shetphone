@@ -42,7 +42,15 @@ new Vue({
     self.fetchToken();
 
     $.getJSON('presets').done(function(data) {
-      self.presets = data.presets;
+      data.presets.forEach(function(preset) {
+        var bits = self.formatNumber(preset.number).split(' ');
+        self.presets.push({
+          index: preset.index,
+          name: preset.name,
+          prefix: bits[0].substring(1),
+          number: bits.slice(1).join(' ')
+        });
+      });
     });
 
     Notification.requestPermission().then(function(result) {

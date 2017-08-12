@@ -7,7 +7,9 @@ from flask_login import (
 )
 from passlib.apache import HtpasswdFile
 
-ht = HtpasswdFile('.htpasswd')
+from shetphone import cfg
+
+ht = HtpasswdFile(cfg['app'].get('htpasswd', '.htpasswd'))
 
 
 class User(UserMixin):

@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import csv
 import os
-
-from backports.configparser import ConfigParser
 
 from flask import Flask, jsonify, request, Response, redirect, url_for, abort
 from flask_login import current_user, login_required
@@ -12,12 +9,10 @@ from twilio.jwt.client import ClientCapabilityToken
 from twilio.twiml.voice_response import VoiceResponse, Dial
 
 from shetphone import auth
-
-cfg = ConfigParser()
-cfg.read('shetphone.ini')
+from shetphone import cfg
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = cfg['app']['secret_key']
 app.config['USE_SESSION_FOR_NEXT'] = True
 
 socketio = SocketIO(app)
@@ -38,13 +33,11 @@ def presets():
         abort(401)
 
     records = []
-    if os.path.exists('presets.csv'):
-        with open('presets.csv', 'rb') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',')
-            for i, row in enumerate(reader):
-                records.append(
-                    dict(index=i, name=row[0], prefix=row[1], number=row[2])
-                )
+    if 'presets' in cfg:
+        for i, (name, number) in enumerate(cfg['presets'].items()):
+            records.append(
+                dict(index=i, name=name, number=number)
+            )
     return jsonify(presets=records)
 
 
@@ -61,9 +54,9 @@ def token():
     if not current_user.is_authenticated:
         abort(401)
 
-    account_sid = os.getenv('TWILIO_ACCOUNT_SID')
-    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-    application_sid = os.getenv('TWILIO_APP_SID')
+    account_sid = cfg['twilio']['account_sid']
+    auth_token = cfg['twilio']['auth_token']
+    application_sid = cfg['twilio']['application_sid']
 
     capability = ClientCapabilityToken(account_sid, auth_token, ttl=86400)
     capability.allow_client_outgoing(application_sid)
@@ -77,9 +70,9 @@ def token():
 def voice():
     resp = VoiceResponse()
 
-    numbers = dict(cfg['shetphone:numbers'].items())
-    if 'shetphone:clients' in cfg:
-        clients = dict(cfg['shetphone:clients'].items())
+    numbers = dict(cfg['numbers'].items())
+    if 'clients' in cfg:
+        clients = dict(cfg['clients'].items())
     else:
         # If preferred client -> number maps aren't provided, we just flip the
         # number -> client map around, possibly clobbering some numbers if
