@@ -6,4 +6,4 @@ passlib==1.7.1
 configparser==3.5.0
 
 uwsgi==2.0.15
-gevent-1.2.2
+gevent==1.2.2
