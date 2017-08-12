@@ -72,6 +72,11 @@ In your virtual environment, run ``uwsgi --ini shetphone.ini``.
 Once that's done, stick an HTTP proxy in front of it and host it somewhere Twilio can see it.
 I've included an example NGINX configuration file that covers how to set up all the various routes, including the websockets.
 
+If you're developing, you might find it easier to just run ``python run.py`` which will kick off a local server on port 5000.
+In order to get this to talk to Twilio, you'll need to use a proxy service such as ngrok_.
+
+.. _ngrok: https://ngrok.com/
+
 TODO
 ====
 
