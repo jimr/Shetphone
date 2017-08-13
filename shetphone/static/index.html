@@ -38,7 +38,7 @@
             <div class="six columns">
                 <div class="row">
                     <select name="preset" v-cloak v-if="presets.length">
-                        <option v-for="preset in presets" v-bind:value="preset.index">
+                        <option v-for="(preset, index) in presets" v-bind:value="index">
                             {{ preset.name }}
                         </option>
                     </select>

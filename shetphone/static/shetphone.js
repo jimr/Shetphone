@@ -5,12 +5,12 @@ new Vue({
   data: {
     countryPrefix: '44',
     currentNumber: '',
-    formatter: null,
     muted: false,
     onPhone: false,
     online: false,
     incoming: null,
     connection: null,
+    socket: null,
     history: [],
     historyCount: 0,
     login_url: null,
@@ -34,18 +34,24 @@ new Vue({
   created: function() {
     var self = this;
 
+    // Fetch auth URLs so we don't have to hard-code login / logout. We do this
+    // first because `fetchToken` might force us out to the login page. Can't
+    // do that if we don't know where it is.
     $.getJSON('auth-urls').done(function(urls) {
       self.login_url = urls['login'];
       self.logout_url = urls['logout'];
     });
 
+    // Can't do anything without a token, so we fetch that before doing
+    // anything else. This will force us away to the login page if we get a 401
+    // back.
     self.fetchToken();
 
+    // Next, load the presets so we can build out the UI.
     $.getJSON('presets').done(function(data) {
       data.presets.forEach(function(preset) {
         var bits = self.formatNumber(preset.number).split(' ');
         self.presets.push({
-          index: preset.index,
           name: preset.name,
           prefix: bits[0].substring(1),
           number: bits.slice(1).join(' ')
@@ -53,32 +59,20 @@ new Vue({
       });
     });
 
+    // Request permission for desktop notificaionts.
     Notification.requestPermission().then(function(result) {
       self.log('Desktop notifications ' + result);
     });
 
     // Set up a socket to handle call status change events from Twilio
-    socket = io(
+    self.socket = io(
       location.protocol + '//' + document.domain + ':' + location.port,
       {path: location.pathname + 'socket.io/'}
     );
 
-    socket.on('connect', function(message) {
-      if (message !== undefined) {
-        self.log('Socket connected as ' + message);
-      }
-    });
-
-    socket.on('logout', function() {
-      self.log('Logout detected.');
-      self.fetchToken();
-    });
-
-    socket.on('disconnect', function() {
-      self.log('Socket disconnected');
-    });
-
-    socket.on('status', function(data) {
+    // Status callbacks from Twilio land here. We only really care about rining
+    // vs answered - initiated and completed are usually pretty obvious.
+    self.socket.on('status', function(data) {
       if (data['Direction'] === 'outbound-dial') {
         var status = data['CallStatus'];
         if (status === 'ringing') {
@@ -89,7 +83,24 @@ new Vue({
       }
     });
 
-    self.socket = socket;
+    // If the user logs out in another tab, we receive the logout event here
+    // and force them out to the login page.
+    self.socket.on('logout', function() {
+      self.log('Logout detected.');
+      self.fetchToken();
+    });
+
+    // Don't really need to listen to these events except to log a message to
+    // the user indicating it's connected.
+    self.socket.on('connect', function(message) {
+      if (message !== undefined) {
+        self.log('Socket connected as ' + message);
+      }
+    });
+
+    self.socket.on('disconnect', function() {
+      self.log('Socket disconnected');
+    });
 
     // Configure event handlers for Twilio Device
     Twilio.Device.disconnect(function() {
@@ -106,7 +117,12 @@ new Vue({
 
     Twilio.Device.incoming(function (connection) {
       var number = self.getNumber(connection);
-      var message = 'Incoming call from ' + self.formatNumber(number);
+      var message = 'Incoming call from ';
+      if (number in self.presetNumbers) {
+        message += self.presetNumbers[number];
+      } else {
+        message += self.formatNumber(number);
+      }
       self.incoming = connection;
       self.log(message);
       self.notify(message);
@@ -131,11 +147,11 @@ new Vue({
       self.log('Error: ' + e.message);
     });
 
-    // respond to keyboard input 
+    // Respond to keyboard input.
     document.addEventListener('keydown', function(event) {
       var buttons = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#'];
-      if ($('input[type=tel]').is(':focus')) {
-        if (event.key === 'Escape') {
+      if (event.key === 'Escape') {
+        if ($('input[type=tel]').is(':focus')) {
           self.clear();
         }
       } else if (self.onPhone && buttons.indexOf(event.key) >= 0) {
@@ -145,10 +161,6 @@ new Vue({
   },
 
   computed: {
-    status: function() {
-      return this.history[0];
-    },
-
     validPhone: function() {
       try {
         return libphonenumber.isValidNumber(this.fullNumber);
@@ -161,13 +173,6 @@ new Vue({
       return '+' + this.countryPrefix + this.currentNumber;
     },
 
-    countryCode: function() {
-      var self = this;
-      return this.countries.find(function(country) {
-        return country.prefix === self.countryPrefix;
-      }).code;
-    },
-
     ringing: function() {
       if (this.incoming !== null) {
         return this.incoming.status() !== "closed";
@@ -175,6 +180,9 @@ new Vue({
       return false;
     },
 
+    // Whether or not the wee green phone is enabled, basically. If we're
+    // offline, then no. Otherwise, only if there's an un-answered incoming
+    // call or a valid phone number in the input box.
     canConnect: function() {
       if (!this.online) {
         return false;
@@ -185,10 +193,25 @@ new Vue({
       } else {
         return false;
       }
+    },
+
+    // Map full preset numbers to names so we can do basic caller ID for
+    // numbers we know.
+    presetNumbers: function() {
+      var nums = [];
+      this.presets.forEach(function(preset) {
+        var number = '+' + preset.prefix + preset.number.replace(/\D/g, '');
+        nums[number] = preset.name;
+      });
+      return nums;
     }
   },
 
   methods: {
+    // Stick a message on the log with a timestamp. We only keep the most
+    // recent 10 messages. We keep a history counter so we can set the
+    // attributes correctly on the <ol> in the template (though they're not
+    // displayed, it's nice to be correct).
     log: function(message) {
       this.historyCount++;
       this.history.unshift({date: new Date(), message: message });
@@ -207,6 +230,7 @@ new Vue({
       }
     },
 
+    // Can't do anything without a token from Twilio.
     fetchToken: function() {
       var self = this;
 
@@ -227,12 +251,6 @@ new Vue({
       });
     },
 
-    // Handle country code selection
-    selectCountry: function(country) {
-      this.countryPrefix = country.prefix;
-    },
-
-    // Handle muting
     toggleMute: function() {
       this.muted = !this.muted;
       Twilio.Device.activeConnection().mute(this.muted);
@@ -240,7 +258,6 @@ new Vue({
 
     loadPreset: function() {
       var preset = this.presets[$('select[name=preset]').val()];
-
       this.currentNumber = preset.number;
       this.countryPrefix = preset.prefix;
       this.log('Loaded preset "' + preset.name + '"');
@@ -270,9 +287,9 @@ new Vue({
         }
       }
     },
-    
+
+    // Hang up call in progress / decline incoming call
     disconnect: function() {
-      // hang up call in progress / decline incoming call
       if (this.ringing) {
         this.incoming.reject();
         this.incoming = null;
@@ -297,6 +314,7 @@ new Vue({
       return number;
     },
 
+    // Desktop notifications for incoming calls
     notify: function(body) {
       var self = this;
       var options = {
@@ -305,11 +323,12 @@ new Vue({
       };
       var n = new Notification('The Shetphone', options);
       n.onclick = function(event) {
+        // Answer the call if the user clicks on the notification
         self.connect();
       };
     },
 
-    // add a fake 'active' state when responding to keyboard input
+    // Add a fake 'active' state when responding to keyboard input
     pressButton: function(digit) {
       var button = '#';
       if (!isNaN(digit)) {
@@ -321,8 +340,8 @@ new Vue({
           button += 'asterisk';
         }
       }
-      // we use a CSS animation to fade in / out so we have to wait until it's
-      // done before removing the class
+      // We use a CSS animation to fade in / out so we have to wait until it's
+      // done before removing the class.
       $(button).addClass('active').delay(750).queue(
         function(next) {
           $(this).removeClass('active');

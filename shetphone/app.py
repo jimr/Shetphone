@@ -32,12 +32,14 @@ def presets():
     if not current_user.is_authenticated:
         abort(401)
 
-    records = []
     if 'presets' in cfg:
-        for i, (name, number) in enumerate(cfg['presets'].items()):
-            records.append(
-                dict(index=i, name=name, number=number)
-            )
+        records = [
+            {'name': name, 'number': number}
+            for name, number in cfg['presets'].items()
+        ]
+    else:
+        records = []
+
     return jsonify(presets=records)
 
 
