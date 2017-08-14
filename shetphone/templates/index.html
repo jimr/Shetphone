@@ -18,7 +18,7 @@
     <div id="shetphone" class="container">
         <h1 class="u-full-width">
             The Shetphone
-            <a :href="logout_url" title="Logout" v-cloak>
+            <a href="{{ url_for('logout') }}" title="Logout" v-cloak>
               <i class="fa fa-sign-out" aria-hidden="true"></i>
             </a>
         </h1>
@@ -28,7 +28,7 @@
                 <div class="row" v-cloak>
                     <select name="countryPrefix" v-model="countryPrefix">
                       <option v-for="country in countries" v-bind:value="country.prefix">
-                          {{ country.name }} (+{{ country.prefix }})
+                          ${ country.name } (+${ country.prefix })
                       </option>
                     </select>
                     <input type="tel" class="form-control" v-model="currentNumber">
@@ -39,7 +39,7 @@
                 <div class="row">
                     <select name="preset" v-cloak v-if="presets.length">
                         <option v-for="(preset, index) in presets" v-bind:value="index">
-                            {{ preset.name }}
+                            ${ preset.name }
                         </option>
                     </select>
                     <button class="button-primary" @click="loadPreset()" v-if="presets.length">
@@ -118,13 +118,17 @@
             <div class="six columns">
                 <transition-group name="history" tag="ol" id="history" reversed="true" :start="[ historyCount > 10 ? historyCount : history.length]" v-cloak>
                     <li v-for="record in history" v-bind:key="record" v-bind:title="record.date.toLocaleString()">
-                        {{ record.date.toLocaleTimeString() }} {{ record.message }}
+                        ${ record.date.toLocaleTimeString() } ${ record.message }
                     </li>
                 </transition-group>
             </div>
         </div>
     </div>
 
+    <script type="text/javascript">
+        var login_url = "{{ url_for('login') }}";
+        var logout_url = "{{ url_for('logout') }}";
+    </script>
     <script src="//media.twiliocdn.com/sdk/js/client/v1.4/twilio.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>

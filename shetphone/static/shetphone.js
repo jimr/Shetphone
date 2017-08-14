@@ -1,6 +1,7 @@
 (function() {
 new Vue({
   el: '#shetphone',
+  delimiters: ["${", "}"],
 
   data: {
     countryPrefix: '44',
@@ -13,8 +14,6 @@ new Vue({
     socket: null,
     history: [],
     historyCount: 0,
-    login_url: null,
-    logout_url: null,
     countries: [
       { name: 'United States', prefix: '1', code: 'US' },
       { name: 'Great Britain', prefix: '44', code: 'GB' },
@@ -33,14 +32,6 @@ new Vue({
 
   created: function() {
     var self = this;
-
-    // Fetch auth URLs so we don't have to hard-code login / logout. We do this
-    // first because `fetchToken` might force us out to the login page. Can't
-    // do that if we don't know where it is.
-    $.getJSON('auth-urls').done(function(urls) {
-      self.login_url = urls['login'];
-      self.logout_url = urls['logout'];
-    });
 
     // Can't do anything without a token, so we fetch that before doing
     // anything else. This will force us away to the login page if we get a 401
@@ -61,7 +52,7 @@ new Vue({
 
     // Request permission for desktop notificaionts.
     Notification.requestPermission().then(function(result) {
-      self.log('Desktop notifications ' + result);
+      console.log('Desktop notifications ' + result);
     });
 
     // Set up a socket to handle call status change events from Twilio
@@ -94,12 +85,12 @@ new Vue({
     // the user indicating it's connected.
     self.socket.on('connect', function(message) {
       if (message !== undefined) {
-        self.log('Socket connected as ' + message);
+        console.log('Socket connected as ' + message);
       }
     });
 
     self.socket.on('disconnect', function() {
-      self.log('Socket disconnected');
+      console.log('Socket disconnected');
     });
 
     // Configure event handlers for Twilio Device
@@ -112,7 +103,6 @@ new Vue({
     Twilio.Device.connect(function(connection) {
       self.incoming = null;
       self.onPhone = true;
-      var number = self.getNumber(connection);
     });
 
     Twilio.Device.incoming(function (connection) {
@@ -234,7 +224,7 @@ new Vue({
     fetchToken: function() {
       var self = this;
 
-      self.log('Fetching token...');
+      console.log('Fetching token');
 
       $.getJSON('token').done(function(data) {
         Twilio.Device.setup(data.token);
@@ -244,7 +234,7 @@ new Vue({
         // If the token request fails because the user isn't logged in, let's
         // redirect them to the login page.
         if (err.status === 401) {
-          window.location = self.login_url;
+          window.location = login_url;
         } else {
           self.log('Could not fetch token, see console.log');
         }

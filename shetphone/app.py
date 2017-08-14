@@ -2,7 +2,10 @@
 
 import os
 
-from flask import Flask, jsonify, request, Response, redirect, url_for, abort
+from flask import (
+    Flask, Response, abort, jsonify, request, redirect, render_template,
+    url_for,
+)
 from flask_login import current_user, login_required
 from flask_socketio import SocketIO, disconnect, emit
 from twilio.jwt.client import ClientCapabilityToken
@@ -24,7 +27,7 @@ auth.init_app(app, socketio)
 @app.route('/')
 @login_required
 def index():
-    return app.send_static_file('index.html')
+    return render_template('index.html')
 
 
 @app.route('/presets')
