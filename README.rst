@@ -85,7 +85,7 @@ TODO
 Why Shetphone?
 ==============
 
-Because I'm in Shetland, I have no mobile signal, and I need a phone.
+Because I was in Shetland, I had no mobile signal, and I needed a phone.
 
 .. image:: https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Flag_of_Shetland.svg/200px-Flag_of_Shetland.svg.png
     :height: 120 px
