@@ -117,7 +117,7 @@
             </div>
             <div class="six columns">
                 <transition-group name="history" tag="ol" id="history" reversed="true" :start="[ historyCount > 10 ? historyCount : history.length]" v-cloak>
-                    <li v-for="record in history" v-bind:key="record" v-bind:title="record.date.toLocaleString()">
+                    <li v-for="record in history" v-bind:key="record.id" v-bind:title="record.date.toLocaleString()">
                         ${ record.date.toLocaleTimeString() } ${ record.message }
                     </li>
                 </transition-group>

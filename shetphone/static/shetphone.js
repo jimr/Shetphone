@@ -204,7 +204,9 @@ new Vue({
     // displayed, it's nice to be correct).
     log: function(message) {
       this.historyCount++;
-      this.history.unshift({date: new Date(), message: message });
+      this.history.unshift(
+        {id: this.historyCount, date: new Date(), message: message }
+      );
       while (this.history.length > 10) {
         this.history.pop();
       }
