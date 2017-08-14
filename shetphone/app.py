@@ -17,6 +17,7 @@ from shetphone import cfg
 app = Flask(__name__)
 app.config['SECRET_KEY'] = cfg['app']['secret_key']
 app.config['USE_SESSION_FOR_NEXT'] = True
+app.config['DEBUG'] = cfg['app'].getboolean('debug')
 
 socketio = SocketIO(app)
 socketio.init_app(app)
