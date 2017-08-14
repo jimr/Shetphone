@@ -47,14 +47,6 @@ def presets():
     return jsonify(presets=records)
 
 
-@app.route('/auth-urls')
-def auth_urls():
-    return jsonify(
-        login=url_for('login'),
-        logout=url_for('logout'),
-    )
-
-
 @app.route('/token')
 def token():
     if not current_user.is_authenticated:
