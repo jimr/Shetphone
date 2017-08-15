@@ -78,25 +78,10 @@
 
             <!-- DTMF Tone interface -->
             <div class="four columns keys" v-cloak>
-                <div class="key-row">
-                    <keypad-button digit='1'></keypad-button>
-                    <keypad-button digit='2' letters='A B C'></keypad-button>
-                    <keypad-button digit='3' letters='D E F'></keypad-button>
-                </div>
-                <div class="key-row">
-                    <keypad-button digit='4' letters='G H I'></keypad-button>
-                    <keypad-button digit='5' letters='J K L'></keypad-button>
-                    <keypad-button digit='6' letters='M N O'></keypad-button>
-                </div>
-                <div class="key-row">
-                    <keypad-button digit='7' letters='P Q R S'></keypad-button>
-                    <keypad-button digit='8' letters='J K L'></keypad-button>
-                    <keypad-button digit='9' letters='W X Y Z'></keypad-button>
-                </div>
-                <div class="key-row">
-                    <keypad-button digit='*'></keypad-button>
-                    <keypad-button digit='0'></keypad-button>
-                    <keypad-button digit='#'></keypad-button>
+                <div class="key-row" v-for="row in buttons">
+                    <keypad-button v-for="button in row"
+                                   v-bind:digit="button.number"
+                                   v-bind:letters="button.letters"></keypad-button>
                 </div>
             </div>
             <div class="six columns">

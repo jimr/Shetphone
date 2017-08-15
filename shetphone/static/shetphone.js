@@ -45,6 +45,26 @@ new Vue({
     socket: null,
     history: [],
     historyCount: 0,
+    buttons: [
+      [
+        {number: '1'},
+        {number: '2', letters: 'A B C'},
+        {number: '3', letters: 'D E F'}
+      ],
+      [
+        {number: '4', letters: 'G H I'},
+        {number: '5', letters: 'K L M'},
+        {number: '6', letters: 'N O P'}
+      ],
+      [
+        {number: '7', letters: 'P Q R S'},
+        {number: '8', letters: 'T U V'},
+        {number: '9', letters: 'W X Y Z'}
+      ],
+      [
+        {number: '*'}, {number: '0'}, {number: '#'}
+      ],
+    ],
     countries: [
       { name: 'United States', prefix: '1', code: 'US' },
       { name: 'Great Britain', prefix: '44', code: 'GB' },
