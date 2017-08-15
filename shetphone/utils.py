@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-def list_routes(app):
+def get_routes(app):
     import urllib
     from flask import url_for
     output = []
@@ -11,8 +11,7 @@ def list_routes(app):
 
         methods = ','.join(rule.methods)
         url = url_for(rule.endpoint, **options)
-        line = urllib.unquote("{:50s} {:20s} {}".format(rule.endpoint, methods, url))
+        line = urllib.unquote("{:30s} {:25s} {}".format(rule.endpoint, methods, url))
         output.append(line)
 
-    app.logger.warn('404 detected. Here are your routes:')
-    app.logger.warn('\n'.join(sorted(output)))
+    return sorted(output)

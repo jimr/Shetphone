@@ -119,7 +119,12 @@ def connect_handler():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    utils.list_routes(app)
+    routes = utils.get_routes(app)
+    message = [
+        '404 detected: {}'.format(request.url),
+        'Registered routes:'
+    ]
+    app.logger.warn('\n'.join(message + routes))
     return render_template(
         'error.html', message='Page not found', code=404
     ), 404
