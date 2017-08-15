@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, jsonify, request, Response, redirect, url_for, abort
+from flask import Flask, abort, request, redirect, render_template, url_for
 from flask_login import (
     LoginManager, UserMixin, current_user, login_required, login_user,
     logout_user,
@@ -45,7 +45,7 @@ def init_app(app, socketio):
             if current_user.is_authenticated:
                 return redirect(url_for('index'))
             else:
-                return app.send_static_file('login.html')
+                return render_template('login.html')
 
     @app.route('/logout')
     @login_required

@@ -13,6 +13,7 @@ from twilio.twiml.voice_response import VoiceResponse, Dial
 
 from shetphone import auth
 from shetphone import cfg
+from shetphone import utils
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = cfg['app']['secret_key']
@@ -114,3 +115,18 @@ def connect_handler():
         emit('connect', current_user.id)
     else:
         disconnect()
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    utils.list_routes(app)
+    return render_template(
+        'error.html', message='Page not found', code=404
+    ), 404
+
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template(
+        'error.html', message='Server error', code=500
+    ), 500
