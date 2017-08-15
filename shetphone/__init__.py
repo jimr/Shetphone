@@ -2,6 +2,6 @@
 
 from backports.configparser import ConfigParser
 
-cfg = ConfigParser(defaults={'debug': 'false'})
+cfg = ConfigParser()
 cfg.optionxform = str
 cfg.read('shetphone.ini')

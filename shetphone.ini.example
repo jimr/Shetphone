@@ -1,5 +1,6 @@
 [app]
 secret_key =
+debug = false
 
 [twilio]
 account_sid =
