@@ -22,12 +22,12 @@ Vue.component('keypad-button', {
     }
   },
   template: '\
-		<button class="circle" \
+    <button class="circle" \
       :id="selector" \
       :disabled="!this.$parent.onPhone" \
-      v-on:click="sendDigit(digit)">{{ digit }}\
-				<span v-if="letters">{{ letters }}</span>\
-		</button>'
+      v-on:click="sendDigit(digit)">\
+        {{ digit }}<span v-if="letters">{{ letters }}</span>\
+    </button>'
 });
 
 new Vue({
