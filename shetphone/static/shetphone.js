@@ -1,4 +1,35 @@
 (function() {
+
+Vue.component('keypad-button', {
+  props: {
+    digit: {type: String, required: true}, 
+    letters: String
+  },
+  computed: {
+    selector: function() {
+      if (this.digit === '*') {
+        return 'asterisk';
+      } else if (this.digit === '#') {
+        return 'hash';
+      } else {
+        return 'num' + this.digit;
+      }
+    }
+  },
+  methods: {
+    sendDigit: function(digit) {
+      this.$parent.sendDigit(digit);
+    }
+  },
+  template: '\
+		<button class="circle" \
+      :id="selector" \
+      :disabled="!this.$parent.onPhone" \
+      v-on:click="sendDigit(digit)">{{ digit }}\
+				<span v-if="letters">{{ letters }}</span>\
+		</button>'
+});
+
 new Vue({
   el: '#shetphone',
   delimiters: ["${", "}"],
