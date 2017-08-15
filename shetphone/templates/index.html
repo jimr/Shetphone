@@ -80,6 +80,7 @@
             <div class="four columns keys" v-cloak>
                 <div class="key-row" v-for="row in buttons">
                     <keypad-button v-for="button in row"
+                                   v-bind:key="button.number"
                                    v-bind:digit="button.number"
                                    v-bind:letters="button.letters"></keypad-button>
                 </div>

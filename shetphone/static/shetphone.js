@@ -66,17 +66,17 @@ new Vue({
       ],
     ],
     countries: [
-      { name: 'United States', prefix: '1', code: 'US' },
-      { name: 'Great Britain', prefix: '44', code: 'GB' },
-      { name: 'Colombia', prefix: '57', code: 'CO' },
-      { name: 'Ecuador', prefix: '593', code: 'EC' },
-      { name: 'Estonia', prefix: '372', code: 'EE' },
-      { name: 'Germany', prefix: '49', code: 'DE' },
-      { name: 'Hong Kong', prefix: '852', code: 'HK' },
-      { name: 'Ireland', prefix: '353', code: 'IE' },
-      { name: 'Singapore', prefix: '65', code: 'SG' },
-      { name: 'Spain', prefix: '34', code: 'ES' },
-      { name: 'Brazil', prefix: '55', code: 'BR' },
+      {name: 'United States', prefix: '1', code: 'US'},
+      {name: 'Great Britain', prefix: '44', code: 'GB'},
+      {name: 'Colombia', prefix: '57', code: 'CO'},
+      {name: 'Ecuador', prefix: '593', code: 'EC'},
+      {name: 'Estonia', prefix: '372', code: 'EE'},
+      {name: 'Germany', prefix: '49', code: 'DE'},
+      {name: 'Hong Kong', prefix: '852', code: 'HK'},
+      {name: 'Ireland', prefix: '353', code: 'IE'},
+      {name: 'Singapore', prefix: '65', code: 'SG'},
+      {name: 'Spain', prefix: '34', code: 'ES'},
+      {name: 'Brazil', prefix: '55', code: 'BR'},
     ],
     presets: []
   },
@@ -190,12 +190,11 @@ new Vue({
 
     // Respond to keyboard input.
     document.addEventListener('keydown', function(event) {
-      var buttons = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#'];
       if (event.key === 'Escape') {
         if ($('input[type=tel]').is(':focus')) {
           self.clear();
         }
-      } else if (self.onPhone && buttons.indexOf(event.key) >= 0) {
+      } else if (self.onPhone && self.keys.indexOf(event.key) >= 0) {
         self.sendDigit(event.key);
       }
     });
@@ -245,6 +244,15 @@ new Vue({
         nums[number] = preset.name;
       });
       return nums;
+    },
+
+    // Grab a list of available `keydown` keys from our buttons
+    keys: function() {
+      var result = [];
+      this.buttons.forEach(function(row) {
+        row.forEach(function(button) { result.push(button.number); });
+      });
+      return result;
     }
   },
 
