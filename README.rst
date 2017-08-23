@@ -40,7 +40,7 @@ You need to set the following entries in the ``[twilio]`` section of your ``shet
 
 With your Twilio account, you'll need to buy a phone number and hook it up to a TwiML app that sends voice requests to the ``/voice`` route.
 
-The ``[numbers]`` section of ``shetphone.ini`` is required so we know which clients to map incoming calls to (keys are unformated numbers, values are user IDs).
+The ``[numbers]`` section of ``shetphone.ini`` is required so we know which clients to map incoming calls to (keys are unformatted numbers, values are user IDs).
 We only route incoming calls to one client; you need to make sure your client IDs match up to the users in your ``.htpasswd`` file.
 
 When making outgoing calls, we use the optional ``[clients]`` section to pick outgoing caller IDs (keys are user IDs, values are numbers).
