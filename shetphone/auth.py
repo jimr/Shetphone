@@ -9,8 +9,6 @@ from passlib.apache import HtpasswdFile
 
 from shetphone import cfg
 
-ht = HtpasswdFile(cfg['app'].get('htpasswd', '.htpasswd'))
-
 
 class User(UserMixin):
     def __init__(self, username):
@@ -35,6 +33,8 @@ def init_app(app, socketio):
         if request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
+
+            ht = HtpasswdFile(cfg['app'].get('htpasswd', '.htpasswd'))
             if ht.check_password(username, password):
                 user = User.get(username)
                 login_user(user, False)
