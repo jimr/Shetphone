@@ -1,4 +1,4 @@
-Flask==0.12.2
+Flask==1.0
 flask-login==0.4.0
 flask-socketio==2.9.2
 twilio~=6.5.0
